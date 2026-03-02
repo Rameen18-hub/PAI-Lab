@@ -1,95 +1,116 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Animal Herd Detection</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 900px;
-      margin: 40px auto;
-      background: #111827;
-      padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-    }
-    h2 {
-      margin-top: 0;
-      color: #38bdf8;
-      text-align: center;
-    }
-    .upload-box {
-      border: 2px dashed #334155;
-      padding: 20px;
-      text-align: center;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      background: #020617;
-    }
-    button {
-      background: #22c55e;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button:hover {
-      opacity: 0.9;
-    }
-    .preview img {
-      max-width: 100%;
-      border-radius: 8px;
-      margin-top: 10px;
-      border: 1px solid #334155;
-    }
-    iframe {
-      width: 100%;
-      height: 420px;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      margin-top: 10px;
-      background: #020617;
-    }
-    .note {
-      font-size: 12px;
-      color: #94a3b8;
-      text-align: center;
-      margin-top: 10px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Random Joke App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset some defaults */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4, #a18cd1);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #333;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #fff;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-align: center;
+        }
+
+        .joke-card {
+            background: #fff;
+            max-width: 500px;
+            width: 100%;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+            font-size: 1.3rem;
+            min-height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .joke-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+        }
+
+        button {
+            margin-top: 25px;
+            padding: 15px 35px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            background: #6a11cb;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .loading {
+            animation: blink 1s linear infinite;
+        }
+
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.4; }
+        }
+
+        @media (max-width: 600px) {
+            .joke-card { font-size: 1.1rem; padding: 20px; }
+            button { width: 100%; padding: 15px; }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Animal Herd Detection (Flask + YOLO)</h2>
 
-    <form method="POST" enctype="multipart/form-data" class="upload-box">
-      <input type="file" name="image" accept="image/*" required>
-      <br><br>
-      <button type="submit">Detect Animals</button>
-    </form>
+    <h1> Random Joke Generator</h1>
 
-    {% if result_image %}
-      <div class="preview">
-        <h3>Detection Result</h3>
-        <img src="{{ result_image }}">
-      </div>
-    {% endif %}
-
-    {% if map_path %}
-      <h3>Detected Herd Location (Map Alert)</h3>
-      <iframe src="{{ map_path }}"></iframe>
-    {% endif %}
-
-    <div class="note">
-      Map rendered using Folium (tiles from OpenStreetMap) · Location via NASA API
+    <div class="joke-card" id="joke-box">
+        Click the button to see a joke!
     </div>
-  </div>
+
+    <button onclick="fetchJoke()">Get a Joke</button>
+
+    <script>
+        async function fetchJoke() {
+            const jokeBox = document.getElementById('joke-box');
+            jokeBox.innerText = "Loading...";
+            jokeBox.classList.add('loading');
+
+            try {
+                const response = await fetch('/joke');
+                const data = await response.json();
+                jokeBox.innerText = data.joke;
+                jokeBox.classList.remove('loading');
+            } catch (error) {
+                jokeBox.innerText = "Oops! Could not fetch a joke.";
+                jokeBox.classList.remove('loading');
+                console.error(error);
+            }
+        }
+    </script>
+
 </body>
 </html>
